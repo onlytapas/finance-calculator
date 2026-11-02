@@ -29,7 +29,7 @@ if (flag('--json')) {
 const S = Engine.short;
 const pad = (s, n, right) => (right ? String(s).padStart(n) : String(s).padEnd(n));
 
-console.log(`\nFinance Calculator  (today ${result.today}${result.ageToday !== null ? `, age ${result.ageToday}` : ''}, horizon age ${result.retireAge} = ${result.endDate})\n`);
+console.log(`\nFinance Calculator  (today ${result.today}${result.ageToday !== null ? `, age ${result.ageToday}` : ''}, horizon ${result.retireAge ? `age ${result.retireAge}` : '20 years'} = ${result.endDate})\n`);
 
 console.log('CURRENT');
 console.log(pad('Investment', 34) + pad('Put in', 12, true) + pad('Last value', 12, true) + pad('As of', 12, true) + pad('Rate', 7, true) + pad('Est. today', 13, true));

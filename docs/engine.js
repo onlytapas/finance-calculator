@@ -71,12 +71,12 @@
     const today = parseDate(opts.today || new Date());
     const profile = data.profile || {};
     const dob = parseDate(opts.dob || profile.dob);
-    const retireAge = Number(opts.retireAge || profile.retireAge || 55);
+    const retireAge = Number(opts.retireAge || profile.retireAge) || null; // null = not set
     const milestoneAges = (opts.milestoneAges || profile.milestoneAges || []).map(Number).filter(Boolean);
 
-    // Horizon: the birthday month of retireAge, or 20 years from now if no DOB.
+    // Horizon: the birthday month of retireAge, or 20 years from now if no DOB or no retirement age.
     let endDate;
-    if (dob) endDate = new Date(dob.getFullYear() + retireAge, dob.getMonth(), 1);
+    if (dob && retireAge) endDate = new Date(dob.getFullYear() + retireAge, dob.getMonth(), 1);
     else endDate = new Date(today.getFullYear() + 20, today.getMonth(), 1);
     if (endDate < today) endDate = new Date(today.getFullYear(), today.getMonth(), 1);
     const endIdx = monthIndex(endDate);
@@ -153,7 +153,8 @@
     pushRow('Today', today, dob ? ageAt(dob, today) : null);
     if (dob) {
       let age = ageAt(dob, today) + 1;
-      for (; age <= retireAge; age += 1) {
+      const lastAge = retireAge || ageAt(dob, endDate);
+      for (; age <= lastAge; age += 1) {
         const d = new Date(dob.getFullYear() + age, dob.getMonth(), 1);
         pushRow(`Age ${age}`, d, age);
       }

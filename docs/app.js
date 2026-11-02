@@ -25,7 +25,7 @@
   let mode = 'browser';
 
   function blank() {
-    return { profile: { name: '', dob: '', retireAge: 55, milestoneAges: [45, 48, 51, 54], notes: '' }, investments: [], assets: [] };
+    return { profile: { name: '', dob: '', retireAge: '', milestoneAges: [], notes: '' }, investments: [], assets: [] };
   }
 
   async function load() {
@@ -111,7 +111,7 @@
     $('#profile').classList.toggle('editing', editing.profile);
     $('#p-name').value = p.name || '';
     $('#p-dob').value = p.dob || '';
-    $('#p-retire').value = p.retireAge || 55;
+    $('#p-retire').value = p.retireAge || '';
     $('#p-milestones').value = (p.milestoneAges || []).join(', ');
     $('#p-notes').value = p.notes || '';
     const today = new Date();
@@ -127,7 +127,7 @@
         </div>
       </div>
       <div class="chips">
-        ${chip('Retire at', `${p.retireAge || 55}${age !== null ? ` <small>in ${Math.max(0, (p.retireAge || 55) - age)} yrs</small>` : ''}`)}
+        ${chip('Retire at', p.retireAge ? `${p.retireAge}${age !== null ? ` <small>in ${Math.max(0, p.retireAge - age)} yrs</small>` : ''}` : '–')}
         ${chip('Milestones', (p.milestoneAges || []).length ? (p.milestoneAges || []).join(' · ') : '–')}
       </div>
       ${p.notes ? `<p class="notes">${esc(p.notes)}</p>` : ''}`;
@@ -137,7 +137,7 @@
     const p = data.profile;
     p.name = $('#p-name').value.trim();
     p.dob = $('#p-dob').value;
-    p.retireAge = Number($('#p-retire').value) || 55;
+    p.retireAge = Number($('#p-retire').value) || '';
     p.milestoneAges = $('#p-milestones').value.split(/[,\s]+/).map(Number).filter((n) => n > 0);
     p.notes = $('#p-notes').value;
   }
@@ -372,7 +372,7 @@
   function renderHeadline(r) {
     const bits = [`Today ${dayMonthYear(r.today)}`];
     if (r.ageToday !== null) bits.push(`age ${r.ageToday}`);
-    bits.push(`projection till age ${r.retireAge} (${monthYear(r.endDate)})`);
+    bits.push(r.retireAge ? `projection till age ${r.retireAge} (${monthYear(r.endDate)})` : `projection for the next 20 years (till ${monthYear(r.endDate)})`);
     $('#headline').textContent = bits.join(' · ');
   }
 
