@@ -137,6 +137,13 @@ button { font: inherit; color: var(--text); cursor: pointer; }
   box-shadow: 0 1px 0 var(--hi) inset, 0 10px 24px -14px rgba(var(--shadow), .45); transition: transform .2s, border-color .3s, box-shadow .3s; }
 .pill:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 1px 0 var(--hi) inset, 0 16px 28px -14px rgba(var(--shadow), .5); }
 .pill svg { width: 17px; height: 17px; color: var(--accent); }
+.pill:disabled { opacity: .45; cursor: not-allowed; transform: none; border-color: var(--border); box-shadow: none; }
+.pill:disabled svg { color: var(--text-3); }
+#btn-reset:not(:disabled):hover svg { transform: rotate(-90deg); }
+#btn-reset svg { transition: transform .4s cubic-bezier(.3, 1.4, .5, 1); }
+#btn-reset.spin svg { animation: spin-back .6s cubic-bezier(.4, 0, .2, 1); }
+@keyframes spin-back { to { transform: rotate(-360deg); } }
+.sub.error { color: var(--bad); }
 .btn-3d { position: relative; overflow: hidden; border: 0; border-radius: 14px; padding: 13px 26px; margin-top: 14px;
   font-size: 12.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--btn-text);
   background: linear-gradient(180deg, var(--btn-hi), var(--btn-bg));
@@ -251,12 +258,13 @@ select { -webkit-appearance: none; appearance: none; cursor: pointer; padding-ri
 #inv-table select { width: 92px; text-align: left; }
 #inv-table.no-yearly .col-yearly { display: none; }
 #asset-table input { width: 100%; min-width: 80px; }
-#asset-table input.wide { min-width: 220px; }
-#asset-table td.num input { width: 140px; text-align: center; }
-#asset-table td.num input.narrow { width: 90px; }
+#asset-table input.wide { min-width: 170px; }
+#asset-table td.num input { width: 124px; text-align: center; }
+#asset-table td.num input.narrow { width: 76px; }
 .units-pair { display: inline-flex; gap: 6px; }
-#asset-table .units-pair input.qty { width: 90px; text-align: center; }
-#asset-table .units-pair input.unit { width: 110px; min-width: 0; text-align: left; }
+#asset-table .units-pair input.qty { width: 72px; text-align: center; }
+#asset-table .units-pair select.unit-pick { width: 104px; min-width: 0; }
+#asset-table .units-pair input.unit { width: 84px; min-width: 0; text-align: left; }
 input.flash { animation: flash .9s ease; }
 @keyframes flash { 0% { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); } }
 

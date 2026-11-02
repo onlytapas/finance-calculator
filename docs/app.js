@@ -48,11 +48,38 @@
       : 'Your numbers stay only in this browser tab. They survive a refresh and are cleared when you close it. Nothing is sent anywhere.';
     // first visit: open the profile; Investments & Assets wait behind their pencil with a hint
     if (!data.investments.length && !data.assets.length) editing.profile = true;
+    $('#btn-reset').hidden = mode !== 'browser'; // never offered on the local copy that writes data.json
     renderProfile();
     renderList('investments');
     renderList('assets');
     recalc();
   }
+
+  // Reset is greyed out until something has been typed or saved.
+  function hasAnything() {
+    const p = data.profile;
+    return !!(p.name || p.dob || p.retireAge || (p.milestoneAges || []).length || p.notes || data.investments.length || data.assets.length)
+      || $$('main input, main textarea').some((el) => el.type !== 'checkbox' && el.value.trim() !== '' && !el.closest('[hidden]'));
+  }
+  function refreshReset() { $('#btn-reset').disabled = !hasAnything(); }
+  document.addEventListener('input', refreshReset);
+
+  $('#btn-reset').addEventListener('click', () => {
+    if (!confirm('Clear everything you have entered and start again?')) return;
+    const btn = $('#btn-reset');
+    btn.classList.add('spin');
+    setTimeout(() => btn.classList.remove('spin'), 600);
+    try { sessionStorage.removeItem(STORE_KEY); } catch (e) { /* storage blocked, nothing to clear */ }
+    data = blank();
+    dirty = false;
+    editing.profile = true;
+    editing.holdings = false;
+    renderProfile();
+    renderList('investments');
+    renderList('assets');
+    recalc();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   async function save() {
     try {
@@ -185,6 +212,12 @@
     return m ? Number(m[0]) : 0;
   };
 
+  // Units offered for assets; anything else goes in through Other.
+  const UNITS = ['grams', 'kg', 'sq ft', 'sq yards', 'acres', 'pieces'];
+
+  // Edit boxes show amounts with Indian commas (38,88,000); parseNum reads them back.
+  const fmtNum = (n) => (Number(n) ? Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 }) : '');
+
   const hasYearly = () => data.investments.some((i) => Number(i.yearly) > 0);
   const hasTax = () => data.investments.some((i) => Number(i.tax) > 0);
 
@@ -196,6 +229,7 @@
     if (kind === 'investments') $(L.table).classList.toggle('no-yearly', !on && !hasYearly());
     const tb = $(L.table + ' tbody');
     tb.innerHTML = '';
+    if (data) setTimeout(refreshReset); // rows added or removed
     if (!list.length) {
       tb.innerHTML = `<tr class="empty"><td colspan="${L.fields.length + 1}">${on ? L.emptyEditing : L.empty}</td></tr>`;
       return;
@@ -211,27 +245,31 @@
           return;
         }
         if (f.type === 'units') {
-          // number of units plus what a unit is (grams, sq ft)
+          // how many units, and a unit picked from a list (Other lets you type your own)
           const wrap = document.createElement('div');
           wrap.className = 'units-pair';
           const qty = document.createElement('input');
           qty.type = 'text'; qty.inputMode = 'decimal'; qty.className = 'qty';
-          qty.value = item.units || '';
+          qty.value = fmtNum(item.units);
           qty.placeholder = '100';
-          const unit = document.createElement('input');
-          unit.type = 'text'; unit.className = 'unit';
-          unit.value = item.unit || '';
-          unit.placeholder = 'grams / sq ft';
-          qty.addEventListener('input', () => {
-            item.units = parseNum(qty.value);
-            // "100 grams" typed in the first box: keep the word as the unit if that box is empty
-            const word = qty.value.replace(/[\d.,₹\s]+/, '').trim();
-            if (word && (!unit.value || unit.dataset.auto)) { item.unit = word; unit.value = word; unit.dataset.auto = '1'; }
-            fillValue(item, tr);
+          const pick = document.createElement('select');
+          pick.className = 'unit-pick';
+          pick.innerHTML = '<option value="">unit</option>' + UNITS.map((u) => `<option>${u}</option>`).join('') + '<option value="other">Other…</option>';
+          const own = document.createElement('input');
+          own.type = 'text'; own.className = 'unit'; own.placeholder = 'e.g. shares';
+          const known = !item.unit || UNITS.includes(item.unit);
+          pick.value = known ? (item.unit || '') : 'other';
+          own.value = known ? '' : item.unit;
+          own.hidden = known;
+          qty.addEventListener('input', () => { item.units = parseNum(qty.value); fillValue(item, tr); dirty = true; });
+          pick.addEventListener('change', () => {
+            own.hidden = pick.value !== 'other';
+            item.unit = pick.value === 'other' ? own.value.trim() : pick.value;
+            if (!own.hidden) own.focus();
             dirty = true;
           });
-          unit.addEventListener('input', () => { item.unit = unit.value.trim(); delete unit.dataset.auto; dirty = true; });
-          wrap.append(qty, unit);
+          own.addEventListener('input', () => { item.unit = own.value.trim(); dirty = true; });
+          wrap.append(qty, pick, own);
           td.appendChild(wrap);
           tr.appendChild(td);
           return;
@@ -247,7 +285,8 @@
           el.type = f.type === 'number' ? 'text' : f.type;
           if (f.type === 'number') el.inputMode = 'decimal';
 
-          el.value = item[f.key] == null || (f.key === 'unitPrice' && !item[f.key]) ? '' : item[f.key];
+          if (f.type === 'number') el.value = (f.key === 'unitPrice' && !item[f.key]) ? '' : (fmtNum(item[f.key]) || '0');
+          else el.value = item[f.key] == null ? '' : item[f.key];
           if (f.key === 'unitPrice') el.placeholder = '₹';
           if (f.key === 'name') el.placeholder = L.placeholder;
         }
@@ -303,7 +342,7 @@
     item.value = Math.round(item.units * item.unitPrice);
     item.asOf = Engine.ymd(new Date());
     const box = $('input.asset-value', tr);
-    if (box) { box.value = item.value; box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash'); }
+    if (box) { box.value = fmtNum(item.value); box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash'); }
   }
 
   const unitsText = (item) => Number(item.units) ? `${Number(item.units).toLocaleString('en-IN')} ${esc(item.unit || '')}`.trim() : '';
@@ -373,22 +412,21 @@
     try {
       result = Engine.build(data, {});
     } catch (e) {
-      $('#headline').textContent = 'Cannot calculate: ' + e.message;
+      showError('Cannot calculate: ' + e.message);
       return;
     }
-    renderHeadline(result);
     renderHero(result);
+    refreshReset();
     renderCurrentTable(result);
     renderMilestones(result);
     renderChart(result);
     renderProjTable(result);
   }
 
-  function renderHeadline(r) {
-    const bits = [`Today ${dayMonthYear(r.today)}`];
-    if (r.ageToday !== null) bits.push(`age ${r.ageToday}`);
-    bits.push(r.retireAge ? `projection till age ${r.retireAge} (${monthYear(r.endDate)})` : `projection for the next 20 years (till ${monthYear(r.endDate)})`);
-    $('#headline').textContent = bits.join(' · ');
+  function showError(msg) {
+    const el = $('#headline');
+    el.textContent = msg;
+    el.hidden = false;
   }
 
   function renderHero(r) {
@@ -560,5 +598,5 @@
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
-  load().catch((e) => { $('#headline').textContent = 'Could not load data: ' + e.message; });
+  load().catch((e) => showError('Could not load data: ' + e.message));
 })();

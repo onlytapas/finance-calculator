@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Finance Calculator</title>
 <script>try { var t = localStorage.getItem('finance-calculator:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261102e">
 </head>
 <body>
 <!-- Background, same idea as CosmicScript: soft sage / clay / sand aurora with paper grain -->
@@ -16,10 +16,11 @@
   <div class="brand">
     <div class="kicker">Personal wealth planner</div>
     <h1>Finance Calculator</h1>
-    <p class="sub" id="headline">Loading…</p>
+    <p class="sub error" id="headline" hidden></p>
   </div>
   <div class="top-actions">
     <button class="pill" id="btn-pdf" type="button" title="Save this whole page as a PDF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>Download PDF</span></button>
+    <button class="pill" id="btn-reset" type="button" title="Clear everything and start again" disabled hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5"/></svg><span>Reset</span></button>
     <button class="theme-toggle" id="btn-theme" type="button" aria-label="Switch between dark and light mode" title="Dark / light mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
   </div>
 </header>
@@ -150,7 +151,7 @@
 
 <footer class="muted" id="storage-note"></footer>
 
-<script src="engine.js"></script>
-<script src="app.js"></script>
+<script src="engine.js?v=20261102e"></script>
+<script src="app.js?v=20261102e"></script>
 </body>
 </html>
