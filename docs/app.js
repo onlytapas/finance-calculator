@@ -117,7 +117,7 @@
     const today = new Date();
     const age = p.dob ? Engine.ageAt(p.dob, today) : null;
     const initials = (p.name || '').split(/\s+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
-    const chip = (k, v) => `<div class="chip"><span>${k}</span><b>${v}</b></div>`;
+    const chip = (k, v) => `<div class="chip"><span>${k}</span><b${v === '–' ? ' class="none"' : ''}>${v}</b></div>`;
     $('#profile-view').innerHTML = `
       <div class="who">
         <div class="avatar">${initials ? esc(initials) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'}</div>
