@@ -1,0 +1,14 @@
+# Personal data lives only on this machine and must never be committed.
+data.json
+data.json.tmp
+data*.json
+backups/
+*.pdf
+
+# Private notes for Claude Code (contain personal figures)
+CLAUDE.md
+.claude/
+
+# OS / tooling
+.DS_Store
+node_modules/
