@@ -198,7 +198,7 @@ tr.empty td { padding: 18px 10px; text-align: center; color: var(--text-3); font
 .pencil svg { width: 17px; height: 17px; }
 .editable.editing .pencil { display: none; }
 .editable:not(.editing) .edit, .editable:not(.editing) .edit-cell { display: none; }
-.editable.editing .view { display: none; }
+.editable.editing .view, #profile.editing #profile-view { display: none; }
 .editable.editing { border-color: var(--accent); box-shadow: 0 0 0 4px var(--ring), 0 40px 70px -40px rgba(var(--shadow), .45); }
 .row-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
 .row-actions .btn-3d { margin: 0 0 0 auto; }
