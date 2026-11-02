@@ -178,6 +178,13 @@
       blank: () => ({ id: 'ast' + Date.now(), name: '', units: 0, unit: '', unitPrice: 0, value: 0, asOf: Engine.ymd(new Date()), rate: 0 }),
     },
   };
+  // Amount boxes are plain text with a numeric keypad, so "7,500", "₹ 38,88,000" or "100 grams" all read as numbers.
+  // (A type=number box silently turns those into "", which some browsers do, and the value never fills in.)
+  const parseNum = (str) => {
+    const m = String(str).replace(/[,₹\s]/g, '').match(/\d*\.?\d+/);
+    return m ? Number(m[0]) : 0;
+  };
+
   const hasYearly = () => data.investments.some((i) => Number(i.yearly) > 0);
   const hasTax = () => data.investments.some((i) => Number(i.tax) > 0);
 
@@ -208,15 +215,22 @@
           const wrap = document.createElement('div');
           wrap.className = 'units-pair';
           const qty = document.createElement('input');
-          qty.type = 'number'; qty.min = '0'; qty.step = 'any'; qty.className = 'qty';
+          qty.type = 'text'; qty.inputMode = 'decimal'; qty.className = 'qty';
           qty.value = item.units || '';
           qty.placeholder = '100';
           const unit = document.createElement('input');
           unit.type = 'text'; unit.className = 'unit';
           unit.value = item.unit || '';
           unit.placeholder = 'grams / sq ft';
-          qty.addEventListener('input', () => { item.units = qty.value === '' ? 0 : Number(qty.value); fillValue(item, tr); dirty = true; });
-          unit.addEventListener('input', () => { item.unit = unit.value.trim(); dirty = true; });
+          qty.addEventListener('input', () => {
+            item.units = parseNum(qty.value);
+            // "100 grams" typed in the first box: keep the word as the unit if that box is empty
+            const word = qty.value.replace(/[\d.,₹\s]+/, '').trim();
+            if (word && (!unit.value || unit.dataset.auto)) { item.unit = word; unit.value = word; unit.dataset.auto = '1'; }
+            fillValue(item, tr);
+            dirty = true;
+          });
+          unit.addEventListener('input', () => { item.unit = unit.value.trim(); delete unit.dataset.auto; dirty = true; });
           wrap.append(qty, unit);
           td.appendChild(wrap);
           tr.appendChild(td);
@@ -230,9 +244,9 @@
           el.hidden = !(Number(item.yearly) > 0);
         } else {
           el = document.createElement('input');
-          el.type = f.type;
-          if (f.step) el.step = f.step;
-          if (f.type === 'number') { el.step = el.step || '1'; el.min = '0'; }
+          el.type = f.type === 'number' ? 'text' : f.type;
+          if (f.type === 'number') el.inputMode = 'decimal';
+
           el.value = item[f.key] == null || (f.key === 'unitPrice' && !item[f.key]) ? '' : item[f.key];
           if (f.key === 'unitPrice') el.placeholder = '₹';
           if (f.key === 'name') el.placeholder = L.placeholder;
@@ -240,7 +254,8 @@
         if (f.cls) el.classList.add(f.cls);
         el.addEventListener('input', () => {
           let v = el.value;
-          if (f.type === 'number' || f.type === 'month') v = v === '' ? 0 : Number(v);
+          if (f.type === 'number') v = parseNum(v);
+          else if (f.type === 'month') v = Number(v) || 0;
           item[f.key] = v;
           if (f.key === 'invested') { item.value = v; item.asOf = Engine.ymd(new Date()); }
           if (kind === 'assets' && f.key === 'value') item.asOf = Engine.ymd(new Date());
