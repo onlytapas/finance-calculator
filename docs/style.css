@@ -202,6 +202,8 @@ tr.empty td { padding: 18px 10px; text-align: center; color: var(--text-3); font
 .editable.editing { border-color: var(--accent); box-shadow: 0 0 0 4px var(--ring), 0 40px 70px -40px rgba(var(--shadow), .45); }
 .row-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
 .row-actions .btn-3d { margin: 0 0 0 auto; }
+.holdings-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+.holdings-actions .btn-3d { margin: 0; }
 
 label { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
 input, textarea, select { font: inherit; font-weight: 400; color: var(--text); background: var(--surface-solid); border: 1px solid var(--border-strong); border-radius: 10px; padding: 8px 10px; transition: border-color .2s, box-shadow .2s; }

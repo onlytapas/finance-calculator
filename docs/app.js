@@ -14,7 +14,7 @@
 
   let data = null;
   let dirty = false;
-  const editing = { profile: false, investments: false, assets: false };
+  const editing = { profile: false, holdings: false };
 
   // Two places data can live:
   //  'file'    - this machine runs server.js and has a data.json; saves go to that file.
@@ -46,8 +46,8 @@
     $('#storage-note').textContent = mode === 'file'
       ? 'Your numbers are saved on this computer only.'
       : 'Your numbers stay only in this browser tab. They survive a refresh and are cleared when you close it. Nothing is sent anywhere.';
-    // first visit: open both sections so there is something to fill in
-    if (!data.investments.length) { editing.profile = true; editing.investments = true; }
+    // first visit: open the profile; Investments & Assets wait behind their pencil with a hint
+    if (!data.investments.length && !data.assets.length) editing.profile = true;
     renderProfile();
     renderList('investments');
     renderList('assets');
@@ -86,18 +86,18 @@
   $$('.pencil').forEach((btn) => btn.addEventListener('click', () => {
     const section = btn.closest('.editable').id;
     setEditing(section, true);
-    if (section === 'profile') renderProfile(); else renderList(section);
+    if (section === 'profile') renderProfile(); else { renderList('investments'); renderList('assets'); }
     const first = $('#' + section + ' .edit input, #' + section + ' tbody input');
     if (first) first.focus();
   }));
 
-  // Profile has a plain Save; Investments and Assets have "Calculate current & future", which also jumps to the results.
+  // Profile has a plain Save; Investments & Assets has one "Calculate current & future", which also jumps to the results.
   $$('.calc').forEach((btn) => btn.addEventListener('click', async () => {
     const fromProfile = btn.id === 'btn-profile-save';
     readProfile();
     await save();
     setEditing('profile', false);
-    if (!fromProfile) { setEditing('investments', false); setEditing('assets', false); }
+    if (!fromProfile) setEditing('holdings', false);
     renderProfile();
     renderList('investments');
     renderList('assets');
@@ -150,7 +150,8 @@
   const LISTS = {
     investments: {
       table: '#inv-table', add: '#btn-add', what: 'investment', placeholder: 'e.g. Mutual funds',
-      empty: 'No investments yet. Click the pencil to add one.',
+      empty: 'No investments yet. Click the pencil to add your investments.',
+      emptyEditing: 'No investments yet. Use + Add investment below.',
       fields: [
         { key: 'name', type: 'text', cls: 'wide' },
         { key: 'invested', type: 'number', num: true },
@@ -165,6 +166,7 @@
     assets: {
       table: '#asset-table', add: '#btn-add-asset', what: 'asset', placeholder: 'e.g. Gold, Flat in Pune',
       empty: 'No assets added. Click the pencil to add property, gold, silver or anything else you own.',
+      emptyEditing: 'No assets yet. Use + Add asset below.',
       // units x price per unit fills the asset value; the value can also be typed straight in
       fields: [
         { key: 'name', type: 'text', cls: 'wide' },
@@ -180,14 +182,15 @@
   const hasTax = () => data.investments.some((i) => Number(i.tax) > 0);
 
   function renderList(kind) {
-    const L = LISTS[kind], list = data[kind], on = editing[kind];
-    $('#' + kind).classList.toggle('editing', on);
+    // both tables open and close together with the Investments & Assets pencil
+    const L = LISTS[kind], list = data[kind], on = editing.holdings;
+    $('#holdings').classList.toggle('editing', on);
     // nobody pays yearly -> hide the yearly columns (they stay while editing so one can be added)
     if (kind === 'investments') $(L.table).classList.toggle('no-yearly', !on && !hasYearly());
     const tb = $(L.table + ' tbody');
     tb.innerHTML = '';
-    if (!list.length && !on) {
-      tb.innerHTML = `<tr class="empty"><td colspan="${L.fields.length + 1}">${L.empty}</td></tr>`;
+    if (!list.length) {
+      tb.innerHTML = `<tr class="empty"><td colspan="${L.fields.length + 1}">${on ? L.emptyEditing : L.empty}</td></tr>`;
       return;
     }
     list.forEach((item, i) => {

@@ -43,13 +43,15 @@
     </div>
   </section>
 
-  <section class="card glow reveal" id="holdings">
-    <div class="card-head"><div><div class="kicker">02 · What you hold</div><h2>Investments &amp; Assets</h2></div></div>
+  <section class="card editable glow reveal" id="holdings">
+    <div class="card-head">
+      <div><div class="kicker">02 · What you hold</div><h2>Investments &amp; Assets</h2></div>
+      <button class="pencil" type="button" title="Edit investments and assets" aria-label="Edit investments and assets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+    </div>
 
-    <div class="panel editable" id="investments">
+    <div class="panel" id="investments">
       <div class="panel-head">
         <div><h3>Investments</h3><p class="muted small">Money you keep adding to: mutual funds, EPF, PPF, FDs, insurance.</p></div>
-        <button class="pencil" type="button" title="Edit investments" aria-label="Edit investments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
       </div>
       <div class="table-wrap">
         <table id="inv-table" class="rows">
@@ -70,14 +72,12 @@
       </div>
       <div class="edit row-actions">
         <button class="pill" id="btn-add" type="button">+ Add investment</button>
-        <button class="btn-3d calc" type="button"><span>Calculate current &amp; future</span></button>
       </div>
     </div>
 
-    <div class="panel editable" id="assets">
+    <div class="panel" id="assets">
       <div class="panel-head">
         <div><h3>Assets</h3><p class="muted small">Things you own: property, gold, silver. Enter units and price per unit, or just the asset value.</p></div>
-        <button class="pencil" type="button" title="Edit assets" aria-label="Edit assets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
       </div>
       <div class="table-wrap">
         <table id="asset-table" class="rows">
@@ -96,8 +96,11 @@
       </div>
       <div class="edit row-actions">
         <button class="pill" id="btn-add-asset" type="button">+ Add asset</button>
-        <button class="btn-3d calc" type="button"><span>Calculate current &amp; future</span></button>
       </div>
+    </div>
+
+    <div class="edit holdings-actions">
+      <button class="btn-3d calc" type="button"><span>Calculate current &amp; future</span></button>
     </div>
   </section>
 
