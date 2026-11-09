@@ -7,8 +7,24 @@ backups/
 
 # Private notes for Claude Code (contain personal figures)
 CLAUDE.md
+CLAUDE.local.md
 .claude/
 
 # OS / tooling
 .DS_Store
 node_modules/
+
+# Secrets: never commit keys, tokens or credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+credentials*.json
+secrets*.json
+*.secret
+.npmrc

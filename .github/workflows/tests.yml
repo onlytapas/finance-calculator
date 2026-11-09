@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Syntax check
+        run: for f in docs/*.js *.js tests/*.js; do node --check "$f"; done
+
+      # No dependencies to install: the tests use Node's built-in test runner.
+      - name: Tests
+        run: npm test

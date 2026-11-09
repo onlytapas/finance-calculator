@@ -55,6 +55,14 @@ node calc.js --json     # raw numbers
 node calc.js --today 2030-01-01
 ```
 
+## Test
+
+```
+npm test                # Node's built-in test runner; no dependencies to install
+```
+
+`tests/engine.test.js` checks the projection maths in `docs/engine.js`: dates and age, monthly compounding with monthly and yearly additions, "invested" counting only money put in, tax only on gains, the 20-year horizon, milestones, assets kept apart, and Indian ₹ formatting. GitHub Actions runs a syntax check and the tests on every push (`.github/workflows/tests.yml`).
+
 ## Files
 
 | Path | Purpose |
@@ -65,3 +73,12 @@ node calc.js --today 2030-01-01
 | `docs/app.js` | Editing, rendering, chart, PDF |
 | `server.js` | Optional local server that reads and writes `data.json` |
 | `calc.js` | Optional terminal view |
+| `tests/engine.test.js` | Tests for the projection maths |
+| `package.json` | `npm start`, `npm run calc` and `npm test` (no dependencies) |
+| `.github/workflows/tests.yml` | Runs the syntax check and tests on GitHub for every push |
+
+## Developed by
+
+Tapas Saha · [github.com/onlytapas](https://github.com/onlytapas) · [onlytapas.github.io](https://onlytapas.github.io/)
+
+© 2026 Tapas Saha

@@ -1,0 +1,15 @@
+{
+  "name": "finance-calculator",
+  "version": "1.0.0",
+  "description": "Browser-only personal wealth planner: investments, assets and birthday-by-birthday projections.",
+  "private": true,
+  "author": "Tapas Saha (https://onlytapas.github.io/)",
+  "scripts": {
+    "start": "node server.js",
+    "calc": "node calc.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
